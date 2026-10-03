@@ -1,7 +1,10 @@
 """口岸联合指挥 的输入输出约定。"""
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
+
+def _utcnow() -> datetime:
+    return datetime.now(timezone.utc).replace(tzinfo=None)
 
 @dataclass(frozen=True)
 class Request:
@@ -9,7 +12,9 @@ class Request:
     action: str
     payload: dict[str, Any]
     request_id: str
-    created_at: datetime = field(default_factory=datetime.utcnow)
+    created_at: datetime = field(default_factory=_utcnow)
+    # 调用方职责：commander / police / customs / railway，处置类动作按此鉴权
+    role: str = ""
 
 @dataclass
 class Result:
